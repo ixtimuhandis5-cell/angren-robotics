@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robototexnika to'garagi</title>
+<style>
+  :root{--bg:#0e1424;--card:#172038;--line:#26335a;--text:#e8edf8;--mut:#8f9bbd;--acc:#3ddc97;--blue:#4da3ff;--bad:#ff6b6b;--warn:#ffc857}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Arial,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:16px 16px 110px}
+  header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  header h1{font-size:22px;margin:0}
+  nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  nav button{background:var(--card);color:var(--mut);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:14px;cursor:pointer}
+  nav button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+  button{font-family:inherit}
+  .btn{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-size:14px;cursor:pointer}
+  .btn.sec{background:var(--line)}
+  .btn.red{background:transparent;color:var(--bad);border:1px solid var(--bad);padding:5px 10px;font-size:12px}
+  .btn.small{padding:5px 10px;font-size:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:15px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stat .n{font-size:32px;font-weight:700}
+  .stat .l{color:var(--mut);font-size:13px}
+  input,select,textarea{background:#0a0f1c;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font-size:15px;font-family:inherit;width:100%}
+  input[type=checkbox]{width:auto}
+  .field{margin-bottom:10px}
+  .field label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600;font-size:13px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px}
+  .pill.g{background:rgba(61,220,151,.15);color:var(--acc)}
+  .pill.r{background:rgba(255,107,107,.15);color:var(--bad)}
+  .pill.y{background:rgba(255,200,87,.15);color:var(--warn)}
+  .bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar>div{height:100%;background:var(--acc)}
+  .att{display:flex;gap:6px;justify-content:flex-end}
+  .att button{border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:8px;padding:7px 12px;cursor:pointer}
+  .att button.p.sel{background:var(--acc);color:#05261a;border-color:var(--acc)}
+  .att button.a.sel{background:var(--bad);color:#fff;border-color:var(--bad)}
+  .empty{color:var(--mut);text-align:center;padding:22px;line-height:1.6}
+  .task-students{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;margin-top:10px}
+  .task-students label{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--mut)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .mut{color:var(--mut);font-size:13px}
+  .list-item{padding:10px 0;border-bottom:1px solid var(--line)}
+  .list-item:last-child{border-bottom:0}
+  .form{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+  /* + tugmasi */
+  #fab{position:fixed;right:20px;bottom:20px;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+  #fabBtn{width:60px;height:60px;border-radius:50%;border:0;background:var(--acc);color:#05261a;font-size:34px;line-height:1;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.45);transition:transform .2s}
+  #fab.open #fabBtn{transform:rotate(45deg);background:var(--bad);color:#fff}
+  #fabMenu{display:none;flex-direction:column;gap:8px;align-items:flex-end}
+  #fab.open #fabMenu{display:flex}
+  #fabMenu button{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:30px;padding:12px 18px;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.35);white-space:nowrap}
+  #fabMenu button:hover{border-color:var(--acc)}
+  #shade{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40}
+  #fab.open ~ #shade{display:block}
+
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .bub{background:#0a0f1c;border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:14px;margin-bottom:12px;line-height:1.55}
+  .ansrow{display:flex;gap:8px;flex-wrap:wrap}
+  .ansrow button{flex:1;min-width:100px;padding:15px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;cursor:pointer}
+  .ansrow button:hover{border-color:var(--acc)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{font-size:12px;padding:3px 9px;border-radius:20px;background:var(--line);color:var(--mut)}
+  .chip.ok{background:rgba(61,220,151,.15);color:var(--acc)}
+  .chip.no{background:rgba(255,107,107,.15);color:var(--bad)}
+  pre.code{background:#0a0f1c;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font:13px/1.55 Consolas,monospace;white-space:pre;margin:10px 0}
+  .hwbox{background:rgba(255,200,87,.08);border:1px solid rgba(255,200,87,.35);border-radius:12px;padding:12px;margin-top:6px;line-height:1.5}
+  .lesson-p{line-height:1.6;margin:6px 0 14px}
+
+  /* oyna */
+  #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:16px}
+  #modal.show{display:flex}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;width:100%;max-width:440px;max-height:90vh;overflow:auto}
+  .box h3{margin:0 0 14px;font-size:18px}
+  .box .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+  #toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#0a0f1c;border:1px solid var(--acc);color:var(--text);padding:10px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:200}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><span style="font-size:28px">🤖</span><h1>Robototexnika to'garagi</h1></header>
+  <nav id="nav"></nav>
+  <div id="view"></div>
+</div>
+
+<div id="fab">
+  <div id="fabMenu">
+    <button onclick="fabGo('student')">👤 O'quvchi qo'shish</button>
+    <button onclick="fabGo('lesson')">📚 Dars qo'shish</button>
+    <button onclick="fabGo('ai')">🤖 AI so'rovi (keldi / vazifa)</button>
+    <button onclick="fabGo('attendance')">✅ Davomat belgilash</button>
+    <button onclick="fabGo('task')">📝 Topshiriq qo'shish</button>
+  </div>
+  <button id="fabBtn" onclick="toggleFab()" aria-label="Qo'shish">+</button>
+</div>
+<div id="shade" onclick="toggleFab(false)"></div>
+
+<div id="modal"><div class="box" id="box"></div></div>
+<div id="toast"></div>
+
+<script>
+const KEY = 'robotics_club_v1';
+let db = load();
+let tab = 'home';
+
+function today(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function $(id){ return document.getElementById(id); }
+function load(){
+  try{ const d = JSON.parse(localStorage.getItem(KEY)); if (d && d.students) return d; }catch(e){}
+  return { students: [], lessons: [], attendance: {}, tasks: [] };
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){} }
+function fmtDate(d){ if(!d) return ''; const p = d.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ---------- + tugmasi
+function toggleFab(force){
+  const f = $('fab');
+  const open = force === undefined ? !f.classList.contains('open') : force;
+  f.classList.toggle('open', open);
+}
+function fabGo(what){
+  toggleFab(false);
+  if (what === 'ai') openFlow();
+  if (what === 'student') openStudentModal();
+  if (what === 'lesson') openLessonModal();
+  if (what === 'attendance') openAttendance();
+  if (what === 'task') openTaskModal();
+}
+
+// ---------- oyna
+let modalOk = null;
+function openModal(title, html, okText, onOk){
+  modalOk = onOk;
+  $('box').innerHTML = '<h3>' + esc(title) + '</h3>' + html +
+    '<div class="actions"><button class="btn sec" onclick="closeModal()">Bekor qilish</button>' +
+    '<button class="btn" onclick="modalSubmit()">' + esc(okText) + '</button></div>';
+  $('modal').classList.add('show');
+  const first = $('box').querySelector('input[type=text]');
+  if (first) setTimeout(() => first.focus(), 50);
+}
+function closeModal(){ $('modal').classList.remove('show'); modalOk = null; }
+function modalSubmit(){ if (modalOk && modalOk() !== false) closeModal(); }
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeModal(); toggleFab(false); } });
+function askConfirm(text, onYes){
+  openModal('Tasdiqlang', '<p style="margin:0;line-height:1.5">' + esc(text) + '</p>', 'Ha', () => { onYes(); });
+}
+
+// ---------- statistika
+function attendancePct(sid){
+  const days = Object.keys(db.attendance).filter(d => sid in db.attendance[d]);
+  if (!days.length) return null;
+  const p = days.filter(d => db.attendance[d][sid]).length;
+  return Math.round(p * 100 / days.length);
+}
+function avgAttendance(){
+  const vals = db.students.map(s => attendancePct(s.id)).filter(v => v !== null);
+  return vals.length ? Math.round(vals.reduce((a,b) => a + b, 0) / vals.length) : null;
+}
+function taskProgress(t){
+  if (!db.students.length) return 0;
+  const done = db.students.filter(s => t.done[s.id]).length;
+  return Math.round(done * 100 / db.students.length);
+}
+function studentTaskCount(sid){ return db.tasks.filter(t => t.done[sid]).length; }
+
+// ---------- navigatsiya
+const TABS = [
+  ['home','🏠 Bosh sahifa'], ['students',"👥 O'quvchilar"], ['attendance','✅ Davomat'],
+  ['lessons','📚 Darslar'], ['tasks','📝 Topshiriqlar'], ['ai','🤖 AI yordamchi'], ['backup','💾 Zaxira']
+];
+function renderNav(){
+  $('nav').innerHTML = TABS.map(t => '<button class="' + (t[0] === tab ? 'active' : '') + '" onclick="go(\'' + t[0] + '\')">' + t[1] + '</button>').join('');
+}
+function go(t){ tab = t; render(); }
+function render(){
+  renderNav();
+  const views = {home:viewHome, students:viewStudents, attendance:viewAttendance, lessons:viewLessons, tasks:viewTasks, ai:viewAI, backup:viewBackup};
+  $('view').innerHTML = views[tab]();
+}
+const HINT = '<div class="empty">Hali hech narsa yo\'q.<br>O\'ng pastdagi <b style="color:var(--acc)">+</b> tugmasini bosing.</div>';
+
+// ---------- bosh sahifa
+function viewHome(){
+  const avg = avgAttendance();
+  const t = today();
+  const upLessons = db.lessons.filter(l => l.date >= t).sort((a,b) => a.date.localeCompare(b.date)).slice(0,4);
+  const upTasks = db.tasks.filter(x => x.deadline && x.deadline >= t && taskProgress(x) < 100).sort((a,b) => a.deadline.localeCompare(b.deadline)).slice(0,4);
+  const rank = db.students.map(s => ({n:s.name, c:studentTaskCount(s.id), a:attendancePct(s.id)}))
+    .sort((a,b) => b.c - a.c || (b.a||0) - (a.a||0)).slice(0,5);
+  return '<div class="grid" style="margin-bottom:14px">' +
+    '<div class="stat"><div class="n">' + db.students.length + '</div><div class="l">O\'quvchilar</div></div>' +
+    '<div class="stat"><div class="n">' + db.lessons.length + '</div><div class="l">Darslar</div></div>' +
+    '<div class="stat"><div class="n">' + (avg === null ? '—' : avg + '%') + '</div><div class="l">O\'rtacha davomat</div></div>' +
+    '<div class="stat"><div class="n">' + db.tasks.filter(x => taskProgress(x) < 100).length + '</div><div class="l">Ochiq topshiriqlar</div></div></div>' +
+  '<div class="grid">' +
+    '<div class="card"><h2>Yaqin darslar</h2>' + (upLessons.length ? upLessons.map(l => '<div class="list-item"><b>' + esc(l.title) + '</b><div class="mut">' + fmtDate(l.date) + '</div></div>').join('') : '<div class="empty">Yaqin darslar yo\'q</div>') + '</div>' +
+    '<div class="card"><h2>Yaqin muddatlar</h2>' + (upTasks.length ? upTasks.map(x => '<div class="list-item"><b>' + esc(x.title) + '</b><div class="mut">Muddat: ' + fmtDate(x.deadline) + ' · ' + taskProgress(x) + '% bajarildi</div></div>').join('') : '<div class="empty">Muddatli topshiriqlar yo\'q</div>') + '</div>' +
+    '<div class="card"><h2>🏆 Eng faollar</h2>' + (rank.length ? rank.map((r,i) => '<div class="list-item row"><span>' + (i+1) + '. ' + esc(r.n) + '</span><span class="mut">' + r.c + ' topshiriq · ' + (r.a === null ? '—' : r.a + '%') + '</span></div>').join('') : '<div class="empty">Hali o\'quvchi yo\'q</div>') + '</div>' +
+  '</div>';
+}
+
+// ---------- o'quvchilar
+function viewStudents(){
+  if (!db.students.length) return '<div class="card">' + HINT + '</div>';
+  return '<div class="card"><table><tr><th>#</th><th>Ism</th><th>Yosh</th><th>Telefon</th><th>Davomat</th><th>Topshiriq</th><th></th></tr>' +
+    db.students.map((s,i) => {
+      const p = attendancePct(s.id);
+      return '<tr><td>' + (i+1) + '</td><td>' + esc(s.name) + '</td><td>' + (esc(s.age) || '—') + '</td><td>' + (esc(s.phone) || '—') + '</td>' +
+        '<td>' + (p === null ? '—' : '<span class="pill ' + (p >= 80 ? 'g' : p >= 50 ? 'y' : 'r') + '">' + p + '%</span>') + '</td>' +
+        '<td>' + (hwPct(s.id) === null ? '—' : hwPct(s.id) + '%') + '</td>' +
+        '<td>' + studentTaskCount(s.id) + ' / ' + db.tasks.length + '</td>' +
+        '<td><button class="btn red" onclick="delStudent(\'' + s.id + '\')">O\'chirish</button></td></tr>';
+    }).join('') + '</table></div>';
+}
+function openStudentModal(){
+  openModal("Yangi o'quvchi",
+    '<div class="field"><label>Ism familiya</label><input type="text" id="mName" placeholder="Masalan: Azizbek Karimov"></div>' +
+    '<div class="field"><label>Yosh</label><input type="number" id="mAge" min="5" max="25" placeholder="12"></div>' +
+    '<div class="field"><label>Telefon (ixtiyoriy)</label><input type="text" id="mPhone" placeholder="+998 ..."></div>',
+    "Qo'shish", () => {
+      const name = $('mName').value.trim();
+      if (!name){ toast('Ismni kiriting'); return false; }
+      db.students.push({ id: uid(), name: name, age: $('mAge').value, phone: $('mPhone').value.trim() });
+      save(); render(); toast("O'quvchi qo'shildi");
+    });
+}
+function delStudent(id){
+  askConfirm("O'quvchini o'chirasizmi? Uning davomat va topshiriq yozuvlari ham o'chadi.", () => {
+    db.students = db.students.filter(s => s.id !== id);
+    Object.keys(db.attendance).forEach(d => delete db.attendance[d][id]);
+    Object.keys(hwMap()).forEach(d => { if (hwMap()[d].marks) delete hwMap()[d].marks[id]; });
+    db.tasks.forEach(t => delete t.done[id]);
+    save(); render();
+  });
+}
+
+// ---------- davomat
+let attTmp = {}, attDay = today();
+function viewAttendance(){
+  const days = Object.keys(db.attendance).filter(d => Object.keys(db.attendance[d]).length).sort().reverse();
+  if (!days.length) return '<div class="card">' + HINT + '</div>';
+  return '<div class="card"><table><tr><th>Sana</th><th>Keldi</th><th>Kelmadi</th><th>Foiz</th><th>Uy vazifa</th><th></th></tr>' +
+    days.map(d => {
+      const v = Object.values(db.attendance[d]);
+      const p = v.filter(Boolean).length;
+      const pct = Math.round(p * 100 / v.length);
+      return '<tr><td>' + fmtDate(d) + '</td><td>' + p + '</td><td>' + (v.length - p) + '</td>' +
+        '<td><span class="pill ' + (pct >= 80 ? 'g' : pct >= 50 ? 'y' : 'r') + '">' + pct + '%</span></td>' +
+        '<td>' + hwCell(d) + '</td>' +
+        '<td><button class="btn sec small" onclick="openAttendance(\'' + d + '\')">Tahrirlash</button></td></tr>';
+    }).join('') + '</table></div>';
+}
+function openAttendance(date){
+  if (!db.students.length){ toast("Avval o'quvchi qo'shing"); return; }
+  attDay = date || today();
+  attTmp = Object.assign({}, db.attendance[attDay] || {});
+  openModal('Davomat belgilash',
+    '<div class="field"><label>Sana</label><input type="date" id="mDate" value="' + attDay + '" onchange="attDateChange(this.value)"></div>' +
+    '<button class="btn sec small" style="margin-bottom:8px" onclick="attAll(true)">Hammasi keldi</button>' +
+    '<div id="attList"></div>',
+    'Saqlash', () => {
+      if (Object.keys(attTmp).length) db.attendance[attDay] = attTmp;
+      save(); render(); toast('Davomat saqlandi');
+    });
+  drawAttList();
+}
+function attDateChange(v){
+  if (!v) return;
+  attDay = v;
+  attTmp = Object.assign({}, db.attendance[attDay] || {});
+  drawAttList();
+}
+function attSet(id, val){ attTmp[id] = val; drawAttList(); }
+function attAll(val){ db.students.forEach(s => attTmp[s.id] = val); drawAttList(); }
+function drawAttList(){
+  $('attList').innerHTML = '<table>' + db.students.map(s =>
+    '<tr><td>' + esc(s.name) + '</td><td><div class="att">' +
+    '<button class="p ' + (attTmp[s.id] === true ? 'sel' : '') + '" onclick="attSet(\'' + s.id + '\',true)">Keldi</button>' +
+    '<button class="a ' + (attTmp[s.id] === false ? 'sel' : '') + '" onclick="attSet(\'' + s.id + '\',false)">Kelmadi</button>' +
+    '</div></td></tr>').join('') + '</table>';
+}
+
+// ---------- darslar
+function viewLessons(){
+  if (!db.lessons.length) return '<div class="card">' + HINT + '</div>';
+  const list = db.lessons.slice().sort((a,b) => b.date.localeCompare(a.date));
+  return '<div class="card">' + list.map(l =>
+    '<div class="list-item row"><div><b>' + esc(l.title) + '</b><div class="mut">' + fmtDate(l.date) + (l.note ? ' · ' + esc(l.note) : '') + '</div></div>' +
+    '<div style="display:flex;gap:8px;align-items:center"><span class="pill ' + (l.date >= today() ? 'y' : 'g') + '">' + (l.date >= today() ? 'Rejada' : "O'tgan") + '</span>' +
+    '<button class="btn red" onclick="delLesson(\'' + l.id + '\')">O\'chirish</button></div></div>').join('') + '</div>';
+}
+function openLessonModal(){
+  openModal('Yangi dars',
+    '<div class="field"><label>Mavzu</label><input type="text" id="mTitle" placeholder="Masalan: Arduino va LED"></div>' +
+    '<div class="field"><label>Sana</label><input type="date" id="mLDate" value="' + today() + '"></div>' +
+    '<div class="field"><label>Izoh yoki havola (ixtiyoriy)</label><input type="text" id="mNote"></div>',
+    "Qo'shish", () => {
+      const title = $('mTitle').value.trim(), date = $('mLDate').value;
+      if (!title || !date){ toast('Mavzu va sanani kiriting'); return false; }
+      db.lessons.push({ id: uid(), title: title, date: date, note: $('mNote').value.trim() });
+      save(); render(); toast("Dars qo'shildi");
+    });
+}
+function delLesson(id){ askConfirm("Darsni o'chirasizmi?", () => { db.lessons = db.lessons.filter(l => l.id !== id); save(); render(); }); }
+
+// ---------- topshiriqlar
+function viewTasks(){
+  if (!db.tasks.length) return '<div class="card">' + HINT + '</div>';
+  return db.tasks.map(t => {
+    const p = taskProgress(t);
+    return '<div class="card"><div class="row"><div><b>' + esc(t.title) + '</b><div class="mut">' + (t.deadline ? 'Muddat: ' + fmtDate(t.deadline) : 'Muddatsiz') + (t.desc ? ' · ' + esc(t.desc) : '') + '</div></div>' +
+      '<div style="display:flex;gap:8px;align-items:center"><span class="pill ' + (p === 100 ? 'g' : 'y') + '">' + p + '%</span>' +
+      '<button class="btn red" onclick="delTask(\'' + t.id + '\')">O\'chirish</button></div></div>' +
+      '<div class="bar" style="margin-top:10px"><div style="width:' + p + '%"></div></div>' +
+      '<div class="task-students">' + (db.students.map(s => '<label><input type="checkbox" ' + (t.done[s.id] ? 'checked' : '') + ' onchange="toggleTask(\'' + t.id + '\',\'' + s.id + '\',this.checked)"> ' + esc(s.name) + '</label>').join('') || '<span class="mut">O\'quvchilar yo\'q</span>') + '</div></div>';
+  }).join('');
+}
+function openTaskModal(){
+  openModal('Yangi topshiriq',
+    '<div class="field"><label>Nomi</label><input type="text" id="mTT" placeholder="Masalan: Svetofor yasash"></div>' +
+    '<div class="field"><label>Muddat (ixtiyoriy)</label><input type="date" id="mTD"></div>' +
+    '<div class="field"><label>Tavsif (ixtiyoriy)</label><input type="text" id="mTX"></div>',
+    "Qo'shish", () => {
+      const title = $('mTT').value.trim();
+      if (!title){ toast('Nomini kiriting'); return false; }
+      db.tasks.push({ id: uid(), title: title, deadline: $('mTD').value, desc: $('mTX').value.trim(), done: {} });
+      save(); render(); toast("Topshiriq qo'shildi");
+    });
+}
+function toggleTask(tid, sid, val){
+  const t = db.tasks.find(x => x.id === tid);
+  if (val) t.done[sid] = true; else delete t.done[sid];
+  save(); render();
+}
+function delTask(id){ askConfirm("Topshiriqni o'chirasizmi?", () => { db.tasks = db.tasks.filter(t => t.id !== id); save(); render(); }); }
+
+// ---------- uy vazifasi hisobi
+const HW_LABEL = { done: 'Qildi', partial: 'Qisman', no: 'Qilmadi' };
+function hwMap(){ db.hw = db.hw || {}; return db.hw; }
+function hwPct(sid){
+  const days = Object.keys(hwMap()).filter(d => hwMap()[d].marks && sid in hwMap()[d].marks);
+  if (!days.length) return null;
+  let sum = 0;
+  days.forEach(d => { const m = hwMap()[d].marks[sid]; sum += m === 'done' ? 1 : m === 'partial' ? 0.5 : 0; });
+  return Math.round(sum * 100 / days.length);
+}
+function hwCell(d){
+  const h = hwMap()[d];
+  if (!h || !h.marks || !Object.keys(h.marks).length) return '—';
+  const v = Object.values(h.marks);
+  const dn = v.filter(x => x === 'done').length;
+  return '<span class="mut">№' + (h.lesson + 1) + '</span> ' + dn + ' / ' + v.length;
+}
+
+// ---------- Arduino darslari
+const DARSLAR = [
+{ t:"Arduino bilan tanishuv: birinchi dastur (Blink)",
+  th:"Arduino — kichik kompyuter. Dastur ikki qismdan iborat: setup() bir marta ishlaydi, loop() cheksiz takrorlanadi. Plata ustidagi ichki LED 13-pinga ulangan.",
+  parts:"Arduino Uno, USB kabel",
+  code:`void setup() {
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}`,
+  hw:"Miltillash tezligini 200 ms qiling va o'zgarishni kuzating. Keyin yarim soniya yonib, 2 soniya o'chib turadigan qiling." },
+{ t:"Tashqi LED va rezistor",
+  th:"LED faqat bir yo'nalishda ishlaydi: uzun oyoq (+) pinga, qisqa oyoq (−) GND ga ulanadi. LED kuyib ketmasligi uchun 220 Ω rezistor kerak.",
+  parts:"Arduino, LED, 220 Ω rezistor, breadboard, 2 ta sim",
+  code:`const int LED = 8;
+
+void setup() {
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED, HIGH);
+  delay(200);
+  digitalWrite(LED, LOW);
+  delay(200);
+}`,
+  hw:"Ikkita LEDni navbat bilan miltillating (biri yonsa, ikkinchisi o'chsin)." },
+{ t:"Svetofor",
+  th:"Bir nechta chiqishni boshqarish. Buyruqlar ketma-ketligi svetofor ishlash tartibini beradi.",
+  parts:"Arduino, qizil, sariq va yashil LED, 3 ta 220 Ω rezistor, breadboard",
+  code:`const int QIZIL = 8, SARIQ = 9, YASHIL = 10;
+
+void setup() {
+  pinMode(QIZIL, OUTPUT);
+  pinMode(SARIQ, OUTPUT);
+  pinMode(YASHIL, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(QIZIL, HIGH);  delay(5000);  digitalWrite(QIZIL, LOW);
+  digitalWrite(SARIQ, HIGH);  delay(1500);  digitalWrite(SARIQ, LOW);
+  digitalWrite(YASHIL, HIGH); delay(5000);  digitalWrite(YASHIL, LOW);
+}`,
+  hw:"Yashil o'chishidan oldin yashil LED 3 marta miltillasin, keyin sariq yonsin." },
+{ t:"Tugma bilan LEDni boshqarish",
+  th:"Tugma kirish (INPUT) bo'ladi. INPUT_PULLUP rejimida tugma bosilmaganda HIGH, bosilganda LOW o'qiladi, tashqi rezistor kerak emas.",
+  parts:"Arduino, tugma, LED, 220 Ω rezistor, breadboard",
+  code:`const int TUGMA = 2, LED = 8;
+
+void setup() {
+  pinMode(TUGMA, INPUT_PULLUP);
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  if (digitalRead(TUGMA) == LOW) {
+    digitalWrite(LED, HIGH);
+  } else {
+    digitalWrite(LED, LOW);
+  }
+}`,
+  hw:"Teskarisini qiling: tugma bosilmaganda LED yonib tursin, bosilganda o'chsin." },
+{ t:"Tugma bilan yoqish va o'chirish (toggle)",
+  th:"Tugma bosilgan lahzani aniqlash uchun oldingi holatni eslab qolamiz. bool o'zgaruvchi holatni saqlaydi, ! belgisi uni teskarisiga o'zgartiradi.",
+  parts:"Arduino, tugma, LED, 220 Ω rezistor",
+  code:`const int TUGMA = 2, LED = 8;
+bool yoniq = false;
+bool oldingi = HIGH;
+
+void setup() {
+  pinMode(TUGMA, INPUT_PULLUP);
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  bool hozir = digitalRead(TUGMA);
+  if (oldingi == HIGH && hozir == LOW) {
+    yoniq = !yoniq;
+    digitalWrite(LED, yoniq);
+    delay(50);
+  }
+  oldingi = hozir;
+}`,
+  hw:"Ikkita LED va bitta tugma: har bosishda LEDlar navbat bilan almashsin." },
+{ t:"Serial Monitor",
+  th:"Serial.begin(9600) kompyuter bilan aloqani ochadi. Serial.println() qiymatlarni Serial Monitor oynasiga chiqaradi. Xatolarni topishda juda foydali.",
+  parts:"Arduino, USB kabel",
+  code:`int sanoq = 0;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  Serial.print("Sanoq: ");
+  Serial.println(sanoq);
+  sanoq++;
+  delay(500);
+}`,
+  hw:"Sanoq 0 dan 20 gacha borsin, 20 ga yetganda \"Tugadi!\" deb yozib to'xtasin." },
+{ t:"Potensiometr (analog kirish)",
+  th:"Potensiometr — o'zgaruvchan qarshilik. analogRead() 0 dan 1023 gacha qiymat beradi (0 V dan 5 V gacha).",
+  parts:"Arduino, potensiometr 10 kΩ, 3 ta sim",
+  code:`void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int qiymat = analogRead(A0);
+  Serial.println(qiymat);
+  delay(200);
+}`,
+  hw:"Qiymat 512 dan katta bo'lsa \"Yuqori\", aks holda \"Past\" deb yozing." },
+{ t:"LED yorqinligi (PWM)",
+  th:"PWM (~ belgili pinlar: 3, 5, 6, 9, 10, 11) analogWrite(pin, 0..255) bilan yorqinlikni silliq o'zgartiradi.",
+  parts:"Arduino, LED, 220 Ω rezistor (LED 9-pinga)",
+  code:`const int LED = 9;
+
+void setup() {
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  for (int i = 0; i <= 255; i += 5) {
+    analogWrite(LED, i);
+    delay(20);
+  }
+  for (int i = 255; i >= 0; i -= 5) {
+    analogWrite(LED, i);
+    delay(20);
+  }
+}`,
+  hw:"LED asta yonib, tez o'chadigan \"nafas olish\" effektini yarating." },
+{ t:"Potensiometr bilan yorqinlikni boshqarish",
+  th:"map(qiymat, 0, 1023, 0, 255) bir oraliqdagi sonni boshqa oraliqqa o'tkazadi.",
+  parts:"Arduino, potensiometr, LED, 220 Ω rezistor",
+  code:`const int LED = 9;
+
+void setup() {
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  int p = analogRead(A0);
+  int yorqinlik = map(p, 0, 1023, 0, 255);
+  analogWrite(LED, yorqinlik);
+}`,
+  hw:"Serial Monitorda yorqinlikni foiz (0–100%) ko'rinishida chiqaring." },
+{ t:"Buzzer (tovush)",
+  th:"Passiv buzzer tone(pin, chastota, davomiylik) bilan turli tovush chiqaradi. Chastota qancha baland bo'lsa, tovush shunchalik ingichka.",
+  parts:"Arduino, buzzer, tugma",
+  code:`const int BUZZER = 7;
+
+void setup() {
+}
+
+void loop() {
+  tone(BUZZER, 262, 300); delay(400);
+  tone(BUZZER, 330, 300); delay(400);
+  tone(BUZZER, 392, 300); delay(400);
+  noTone(BUZZER);
+  delay(1000);
+}`,
+  hw:"Tugma bosilganda \"do-re-mi\" chalsin." },
+{ t:"Yorug'lik sensori (fotorezistor)",
+  th:"Fotorezistor yorug'likka qarab qarshiligini o'zgartiradi. 10 kΩ rezistor bilan birga kuchlanish bo'luvchi qilib ulanadi va A0 dan o'qiladi.",
+  parts:"Arduino, fotorezistor, 10 kΩ rezistor, LED, 220 Ω rezistor",
+  code:`const int LED = 8;
+
+void setup() {
+  pinMode(LED, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int yorug = analogRead(A0);
+  Serial.println(yorug);
+  if (yorug < 400) {
+    digitalWrite(LED, HIGH);   // qorong'i bo'lsa yonadi
+  } else {
+    digitalWrite(LED, LOW);
+  }
+  delay(100);
+}`,
+  hw:"Chegara qiymatini (400) o'z xonangiz yorug'ligiga moslab toping va kodga yozing." },
+{ t:"Ultratovush sensori (masofa o'lchash)",
+  th:"HC-SR04 ultratovush yuboradi va qaytishini o'lchaydi. Masofa = vaqt × 0.034 / 2 (sm).",
+  parts:"Arduino, HC-SR04, 4 ta sim (VCC, TRIG, ECHO, GND)",
+  code:`const int TRIG = 7, ECHO = 6;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+}
+
+long masofa() {
+  digitalWrite(TRIG, LOW);  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH); delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+  long t = pulseIn(ECHO, HIGH, 30000);
+  return t * 0.034 / 2;
+}
+
+void loop() {
+  Serial.print(masofa());
+  Serial.println(" sm");
+  delay(300);
+}`,
+  hw:"Masofa 10 sm dan kam bo'lsa Serial Monitorga \"Juda yaqin!\" deb yozing." },
+{ t:"Parkovka sensori",
+  th:"Masofaga qarab signal tezligi o'zgaradi: yaqinlashgan sari tez-tez chiyillaydi.",
+  parts:"Arduino, HC-SR04, buzzer, LED",
+  code:`const int TRIG = 7, ECHO = 6, BUZZER = 8;
+
+void setup() {
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+}
+
+long masofa() {
+  digitalWrite(TRIG, LOW);  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH); delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+  long t = pulseIn(ECHO, HIGH, 30000);
+  return t * 0.034 / 2;
+}
+
+void loop() {
+  long m = masofa();
+  if (m > 0 && m < 30) {
+    tone(BUZZER, 1000, 80);
+    delay(m * 10);
+  } else {
+    noTone(BUZZER);
+    delay(100);
+  }
+}`,
+  hw:"Masofa 10 sm dan kam bo'lsa buzzer uzluksiz chalsin va qizil LED yonsin." },
+{ t:"Servo motor",
+  th:"Servo motor burchakni aniq boshqaradi (0–180°). #include <Servo.h> kutubxonasi kerak, signal sim PWM pinga ulanadi.",
+  parts:"Arduino, servo (SG90), 3 ta sim",
+  code:`#include <Servo.h>
+
+Servo servo;
+
+void setup() {
+  servo.attach(10);
+}
+
+void loop() {
+  for (int a = 0; a <= 180; a += 2) {
+    servo.write(a);
+    delay(15);
+  }
+  for (int a = 180; a >= 0; a -= 2) {
+    servo.write(a);
+    delay(15);
+  }
+}`,
+  hw:"Servo 0°, 90° va 180° holatlarda 1 soniyadan to'xtab tursin." },
+{ t:"Servoni potensiometr bilan boshqarish",
+  th:"Potensiometr qiymatini map() bilan burchakka aylantiramiz. Robot qo'lning asosi shu tamoyilda ishlaydi.",
+  parts:"Arduino, servo, potensiometr",
+  code:`#include <Servo.h>
+
+Servo servo;
+
+void setup() {
+  servo.attach(10);
+}
+
+void loop() {
+  int p = analogRead(A0);
+  int burchak = map(p, 0, 1023, 0, 180);
+  servo.write(burchak);
+  delay(15);
+}`,
+  hw:"Servo burchagini Serial Monitorda ham ko'rsating." },
+{ t:"DC motor va L298N drayveri",
+  th:"DC motor Arduino pinidan to'g'ridan-to'g'ri ishlamaydi, motor drayveri (L298N) kerak. IN1 va IN2 yo'nalishni, ENA tezlikni boshqaradi.",
+  parts:"Arduino, L298N, DC motor, batareya (6–9 V), simlar",
+  code:`const int ENA = 5, IN1 = 6, IN2 = 7;
+
+void setup() {
+  pinMode(ENA, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);   // oldinga
+  analogWrite(ENA, 200);   delay(2000);
+  analogWrite(ENA, 0);     delay(1000);
+
+  digitalWrite(IN1, LOW);  digitalWrite(IN2, HIGH);  // orqaga
+  analogWrite(ENA, 200);   delay(2000);
+  analogWrite(ENA, 0);     delay(1000);
+}`,
+  hw:"Motor tezligi asta oshib, keyin asta kamayadigan qiling." },
+{ t:"Robot mashina: to'siqdan qochish",
+  th:"Ikkita motor va ultratovush sensori bilan to'siqdan qochadigan robot: to'siq 20 sm ga yaqinlashsa to'xtaydi, orqaga qaytadi va burilib ketadi.",
+  parts:"Arduino, L298N, 2 ta motor, korpus va g'ildiraklar, HC-SR04, batareya",
+  code:`const int ENA = 5, IN1 = 6, IN2 = 7;
+const int ENB = 3, IN3 = 4, IN4 = 8;
+const int TRIG = 11, ECHO = 12;
+
+void setup() {
+  int pinlar[] = {ENA, IN1, IN2, ENB, IN3, IN4, TRIG};
+  for (int i = 0; i < 7; i++) pinMode(pinlar[i], OUTPUT);
+  pinMode(ECHO, INPUT);
+}
+
+long masofa() {
+  digitalWrite(TRIG, LOW);  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH); delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+  long t = pulseIn(ECHO, HIGH, 30000);
+  return t * 0.034 / 2;
+}
+
+void yur(bool c1, bool c2, bool o1, bool o2, int tezlik) {
+  digitalWrite(IN1, c1); digitalWrite(IN2, c2);
+  digitalWrite(IN3, o1); digitalWrite(IN4, o2);
+  analogWrite(ENA, tezlik);
+  analogWrite(ENB, tezlik);
+}
+
+void loop() {
+  long m = masofa();
+  if (m > 0 && m < 20) {
+    yur(LOW, LOW, LOW, LOW, 0);        delay(200);  // to'xta
+    yur(LOW, HIGH, LOW, HIGH, 180);    delay(400);  // orqaga
+    yur(HIGH, LOW, LOW, HIGH, 180);    delay(400);  // o'ngga burilish
+  } else {
+    yur(HIGH, LOW, HIGH, LOW, 180);                 // oldinga
+  }
+  delay(50);
+}`,
+  hw:"Burilish vaqtini (400 ms) o'zgartirib, robot to'siqdan eng yaxshi qochadigan qiymatni toping." },
+{ t:"Bluetooth (HC-05) bilan boshqarish",
+  th:"HC-05 modul telefon bilan simsiz aloqa beradi. Telefondan '1' yuborilsa LED yonadi, '0' bo'lsa o'chadi. Modulning TX pini Arduino 2-pinga, RX pini 3-pinga ulanadi.",
+  parts:"Arduino, HC-05, LED, rezistor, telefon (Serial Bluetooth Terminal ilovasi)",
+  code:`#include <SoftwareSerial.h>
+
+SoftwareSerial bt(2, 3);   // RX, TX
+const int LED = 8;
+
+void setup() {
+  bt.begin(9600);
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  if (bt.available()) {
+    char c = bt.read();
+    if (c == '1') digitalWrite(LED, HIGH);
+    if (c == '0') digitalWrite(LED, LOW);
+  }
+}`,
+  hw:"'A' oldinga, 'B' orqaga, 'S' to'xta buyruqlarini Serial Monitorga yozdiring (keyin mashinaga ulaymiz)." },
+{ t:"Harorat va namlik sensori (DHT11)",
+  th:"DHT11 harorat va namlikni o'lchaydi. Arduino IDE ning Library Manager orqali Adafruit \"DHT sensor library\" kutubxonasini o'rnating.",
+  parts:"Arduino, DHT11 modul, 3 ta sim",
+  code:`#include <DHT.h>
+
+DHT dht(2, DHT11);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+}
+
+void loop() {
+  Serial.print("Harorat: ");
+  Serial.print(dht.readTemperature());
+  Serial.print(" C, Namlik: ");
+  Serial.print(dht.readHumidity());
+  Serial.println(" %");
+  delay(2000);
+}`,
+  hw:"Harorat 30 °C dan oshsa LED yonsin." },
+{ t:"LCD 16x2 ekran (I2C)",
+  th:"I2C LCD ekran faqat 4 ta sim bilan ishlaydi (VCC, GND, SDA, SCL). LiquidCrystal_I2C kutubxonasi kerak. Manzil odatda 0x27 yoki 0x3F.",
+  parts:"Arduino, LCD 16x2 I2C modul, 4 ta sim",
+  code:`#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Salom, robot!");
+}
+
+void loop() {
+  lcd.setCursor(0, 1);
+  lcd.print(millis() / 1000);
+  lcd.print(" soniya   ");
+  delay(500);
+}`,
+  hw:"Ekranning birinchi qatorida ismingiz, ikkinchisida masofa (HC-SR04) chiqsin." }
+];
+
+function setCur(i){
+  db.cur = Math.min(Math.max(i, 0), DARSLAR.length - 1);
+  save(); render();
+}
+function copyCode(i){
+  const text = DARSLAR[i].code;
+  const ok = () => toast('Kod nusxalandi');
+  const fb = () => {
+    const t = document.createElement('textarea');
+    t.value = text; document.body.appendChild(t); t.select();
+    try{ document.execCommand('copy'); ok(); }catch(e){ toast("Nusxalab bo'lmadi"); }
+    document.body.removeChild(t);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fb); else fb();
+}
+
+function aiInsights(){
+  if (!db.students.length) return '<div class="mut">Avval o\'quvchilarni qo\'shing, keyin men davomat va uy vazifalarini kuzataman.</div>';
+  const out = [];
+  out.push(hwMap()[today()] ? "Bugungi so'rov o'tkazilgan ✅" : "Bugun hali so'rov o'tkazilmagan. «So'rovni boshlash» tugmasini bosing.");
+  const lowHw = db.students.filter(s => { const p = hwPct(s.id); return p !== null && p < 50; }).map(s => s.name);
+  if (lowHw.length) out.push("Uy vazifasini kam bajarayotganlar: " + lowHw.join(', ') + ".");
+  const lowAtt = db.students.filter(s => { const p = attendancePct(s.id); return p !== null && p < 60; }).map(s => s.name);
+  if (lowAtt.length) out.push("Davomati past: " + lowAtt.join(', ') + ".");
+  if (!lowHw.length && !lowAtt.length && Object.keys(hwMap()).length) out.push("Hozircha hamma yaxshi ishlayapti 👍");
+  return out.map(x => '<div class="list-item">' + esc(x) + '</div>').join('');
+}
+
+function viewAI(){
+  const n = DARSLAR.length;
+  const idx = Math.min(Math.max(db.cur || 0, 0), n - 1);
+  const L = DARSLAR[idx];
+  return `
+  <div class="card">
+    <div class="row"><h2 style="margin:0">🤖 Robo-yordamchi</h2><button class="btn" onclick="openFlow()">So'rovni boshlash</button></div>
+    <div style="margin-top:8px">${aiInsights()}</div>
+  </div>
+  <div class="card">
+    <div class="row">
+      <div><div class="mut">Bugungi dars · ${idx + 1} / ${n}</div><div style="font-size:19px;font-weight:700;margin-top:4px">${esc(L.t)}</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn sec small" onclick="setCur(${idx - 1})" ${idx === 0 ? 'disabled' : ''}>‹ Oldingi</button>
+        <button class="btn small" onclick="setCur(${idx + 1})" ${idx === n - 1 ? 'disabled' : ''}>Keyingi ›</button>
+      </div>
+    </div>
+    <select style="margin-top:10px" onchange="setCur(+this.value)">
+      ${DARSLAR.map((d, i) => `<option value="${i}" ${i === idx ? 'selected' : ''}>${i + 1}. ${esc(d.t)}</option>`).join('')}
+    </select>
+    <h2 style="margin-top:16px">📖 Nazariya</h2>
+    <div class="lesson-p">${esc(L.th)}</div>
+    <h2>🔧 Kerakli qismlar</h2>
+    <div class="lesson-p">${esc(L.parts)}</div>
+    <div class="row"><h2 style="margin:0">💻 Kod</h2><button class="btn sec small" onclick="copyCode(${idx})">Nusxalash</button></div>
+    <pre class="code">${esc(L.code)}</pre>
+    <div class="hwbox"><b>📝 Uy vazifasi</b><div style="margin-top:6px">${esc(L.hw)}</div></div>
+  </div>`;
+}
+
+// ---------- AI so'rovi (har bir o'quvchidan ketma-ket)
+let flow = null;
+function openFlow(){
+  if (!db.students.length){ toast("Avval o'quvchi qo'shing"); return; }
+  flow = { stage: 'start', date: today(), lesson: Math.min(db.cur || 0, DARSLAR.length - 1), i: 0, step: 'came', att: {}, hw: {}, hist: [] };
+  modalOk = null;
+  drawFlow();
+  $('modal').classList.add('show');
+}
+function closeFlow(){ flow = null; closeModal(); }
+function flowStart(){
+  flow.date = $('fDate').value || today();
+  flow.lesson = +$('fLesson').value;
+  flow.stage = 'ask'; flow.i = 0; flow.step = 'came';
+  drawFlow();
+}
+function flowNext(){
+  flow.i++; flow.step = 'came';
+  if (flow.i >= db.students.length) flow.stage = 'done';
+}
+function flowAnswer(val){
+  flow.hist.push(JSON.stringify({ i: flow.i, step: flow.step, att: flow.att, hw: flow.hw }));
+  const s = db.students[flow.i];
+  if (flow.step === 'came'){
+    flow.att[s.id] = val;
+    if (val) flow.step = 'hw'; else flowNext();
+  } else {
+    flow.hw[s.id] = val;
+    flowNext();
+  }
+  drawFlow();
+}
+function flowUndo(){
+  if (!flow.hist.length) return;
+  const h = JSON.parse(flow.hist.pop());
+  flow.i = h.i; flow.step = h.step; flow.att = h.att; flow.hw = h.hw; flow.stage = 'ask';
+  drawFlow();
+}
+function flowSave(){
+  db.attendance[flow.date] = Object.assign({}, db.attendance[flow.date] || {}, flow.att);
+  const old = (hwMap()[flow.date] || {}).marks || {};
+  hwMap()[flow.date] = { lesson: flow.lesson, marks: Object.assign({}, old, flow.hw) };
+  if ($('fNext') && $('fNext').checked) db.cur = Math.min(flow.lesson + 1, DARSLAR.length - 1);
+  save(); closeFlow(); render(); toast("So'rov natijalari saqlandi");
+}
+function drawFlow(){
+  const L = DARSLAR[flow.lesson];
+  let h = '';
+  if (flow.stage === 'start'){
+    h = `<h3>🤖 Robo-yordamchi</h3>
+    <div class="bub">Salom! Men har bir o'quvchidan ketma-ket so'rayman: <b>darsga keldimi</b> va <b>uy vazifasini qildimi</b>. Natijalar davomat va uy vazifa hisobiga avtomatik yoziladi.</div>
+    <div class="field"><label>Sana</label><input type="date" id="fDate" value="${flow.date}"></div>
+    <div class="field"><label>Dars</label><select id="fLesson">${DARSLAR.map((d, i) => `<option value="${i}" ${i === flow.lesson ? 'selected' : ''}>${i + 1}. ${esc(d.t)}</option>`).join('')}</select></div>
+    <div class="actions"><button class="btn sec" onclick="closeFlow()">Bekor qilish</button><button class="btn" onclick="flowStart()">Boshlash</button></div>`;
+  } else if (flow.stage === 'ask'){
+    const s = db.students[flow.i];
+    const total = db.students.length;
+    const chips = db.students.slice(0, flow.i).map(st => {
+      const came = flow.att[st.id];
+      return `<span class="chip ${came ? 'ok' : 'no'}">${esc(st.name.split(' ')[0])}: ${came ? 'keldi' : 'kelmadi'}${came && flow.hw[st.id] ? ' · ' + HW_LABEL[flow.hw[st.id]] : ''}</span>`;
+    }).join('');
+    const q = flow.step === 'came'
+      ? `<b>${esc(s.name)}</b>, bugun darsga keldingmi?`
+      : `<b>${esc(s.name)}</b>, «${esc(L.t)}» darsi bo'yicha uy vazifasini qildingmi?<div class="mut" style="margin-top:6px">Vazifa: ${esc(L.hw)}</div>`;
+    const btns = flow.step === 'came'
+      ? `<button onclick="flowAnswer(true)">✅ Keldi</button><button onclick="flowAnswer(false)">❌ Kelmadi</button>`
+      : `<button onclick="flowAnswer('done')">✅ Qildi</button><button onclick="flowAnswer('partial')">🟡 Qisman</button><button onclick="flowAnswer('no')">❌ Qilmadi</button>`;
+    h = `<div class="row"><h3 style="margin:0">🤖 Robo-yordamchi</h3><span class="mut">${flow.i + 1} / ${total}</span></div>
+    <div class="bar" style="margin:10px 0"><div style="width:${flow.i * 100 / total}%"></div></div>
+    <div class="chips">${chips}</div>
+    <div class="bub">${q}</div>
+    <div class="ansrow">${btns}</div>
+    <div class="actions"><button class="btn sec" onclick="flowUndo()" ${flow.hist.length ? '' : 'disabled'}>↩ Orqaga</button><button class="btn sec" onclick="closeFlow()">To'xtatish</button></div>`;
+  } else {
+    const came = db.students.filter(s => flow.att[s.id] === true);
+    const absent = db.students.filter(s => flow.att[s.id] === false);
+    const part = came.filter(s => flow.hw[s.id] === 'partial');
+    const no = came.filter(s => flow.hw[s.id] === 'no');
+    const done = came.filter(s => flow.hw[s.id] === 'done');
+    const names = a => a.length ? a.map(s => esc(s.name)).join(', ') : '—';
+    const msg = came.length && done.length / came.length >= 0.7
+      ? "Zo'r natija! Ko'pchilik uy vazifasini bajarib kelgan."
+      : "Uy vazifasi kam bajarilgan. Keyingi darsdan oldin o'quvchilarga eslatib qo'ying.";
+    h = `<h3>🤖 So'rov tugadi</h3>
+    <div class="bub">${msg}</div>
+    <div class="list-item"><b>Keldi:</b> ${came.length} ta · <b>Kelmadi:</b> ${absent.length} ta<div class="mut">${names(absent)}</div></div>
+    <div class="list-item"><b>Vazifani qildi:</b> ${done.length} ta<div class="mut">${names(done)}</div></div>
+    <div class="list-item"><b>Qisman:</b> ${part.length} ta<div class="mut">${names(part)}</div></div>
+    <div class="list-item"><b>Qilmadi:</b> ${no.length} ta<div class="mut">${names(no)}</div></div>
+    <label class="mut" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="fNext" checked> Saqlagach keyingi darsga o'tish</label>
+    <div class="actions"><button class="btn sec" onclick="flowUndo()">↩ Orqaga</button><button class="btn" onclick="flowSave()">Saqlash</button></div>`;
+  }
+  $('box').innerHTML = h;
+}
+
+// ---------- zaxira
+function viewBackup(){
+  return '<div class="card"><h2>Zaxira va ma\'lumotlar</h2>' +
+    '<p class="mut">Ma\'lumotlar shu brauzerda saqlanadi. Yo\'qotmaslik uchun vaqti-vaqti bilan zaxira nusxa oling.</p>' +
+    '<div class="form"><button class="btn" onclick="exportData()">Zaxira yuklab olish</button>' +
+    '<button class="btn sec" onclick="$(\'imp\').click()">Zaxiradan tiklash</button>' +
+    '<input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">' +
+    '<button class="btn sec" onclick="exportCSV()">Davomatni CSV qilish</button></div>' +
+    '<div class="form"><button class="btn sec" onclick="loadDemo()">Namuna ma\'lumot yuklash</button>' +
+    '<button class="btn red" onclick="resetAll()">Hammasini o\'chirish</button></div></div>';
+}
+function download(name, text, type){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], {type: type}));
+  a.download = name; a.click();
+}
+function exportData(){ download('togarak-zaxira-' + today() + '.json', JSON.stringify(db, null, 2), 'application/json'); }
+function importData(inp){
+  const f = inp.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const d = JSON.parse(r.result);
+      if (!d.students) throw 0;
+      db = { students: d.students || [], lessons: d.lessons || [], attendance: d.attendance || {}, tasks: d.tasks || [], hw: d.hw || {}, cur: d.cur || 0 };
+      save(); render(); toast('Tiklandi');
+    }catch(e){ toast("Fayl noto'g'ri"); }
+  };
+  r.readAsText(f);
+}
+function exportCSV(){
+  const days = Object.keys(db.attendance).sort();
+  let csv = 'Ism,' + days.join(',') + ',Foiz\n';
+  db.students.forEach(s => {
+    const p = attendancePct(s.id);
+    csv += '"' + s.name.replace(/"/g, '""') + '",' + days.map(d => s.id in db.attendance[d] ? (db.attendance[d][s.id] ? 1 : 0) : '').join(',') + ',' + (p === null ? '' : p) + '\n';
+  });
+  download('davomat.csv', '\uFEFF' + csv, 'text/csv');
+}
+function doDemo(){
+  const names = ['Azizbek Karimov','Madina Yusupova','Jasur Toshmatov','Dilnoza Rahimova','Sardor Aliyev'];
+  db = { students: names.map((n,i) => ({id:'s'+i, name:n, age: 12 + i % 4, phone:''})), lessons: [], attendance: {}, tasks: [] };
+  const d = n => { const x = new Date(); x.setDate(x.getDate() + n); return x.toISOString().slice(0,10); };
+  db.lessons = [
+    {id:'l1', title:'Elektronika asoslari', date:d(-14), note:''},
+    {id:'l2', title:'Arduino va LED', date:d(-7), note:''},
+    {id:'l3', title:'Ultratovush sensori', date:d(2), note:'Sensor va 4 ta sim olib kelish'},
+    {id:'l4', title:"Servo va robot qo'l", date:d(9), note:''}
+  ];
+  [-14,-7,-3].forEach((n,k) => { db.attendance[d(n)] = {}; db.students.forEach((s,i) => db.attendance[d(n)][s.id] = (i + k) % 4 !== 0); });
+  db.tasks = [
+    {id:'t1', title:'LED miltillovchi', deadline:d(-5), desc:'1 soniyada bir marta', done:{s0:true,s1:true,s2:true,s3:true}},
+    {id:'t2', title:'Svetofor yasash', deadline:d(5), desc:'3 ta LED bilan', done:{s1:true,s4:true}}
+  ];
+  save(); render(); toast('Namuna yuklandi');
+}
+function loadDemo(){
+  if (db.students.length) askConfirm("Mavjud ma'lumotlar o'chib, namuna yuklanadi. Davom etasizmi?", doDemo);
+  else doDemo();
+}
+function resetAll(){
+  askConfirm("Hamma ma'lumot o'chadi. Aminmisiz?", () => { db = { students: [], lessons: [], attendance: {}, tasks: [] }; save(); render(); });
+}
+
+render();
+</script>
+</body>
+</html>
